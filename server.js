@@ -44,7 +44,7 @@ io.on("connection", socket => {
             if(err) {
                 res.status(500).send(err);
             } else if(data) {
-                Messages.find({roomId : roomId}, (err,data) => {
+                Messages.find({roomId : roomId}, null, {sort: {'_id': -1}, limit: 10 }, (err,data) => {
                     if(err) {
                         res.status(500).send(err);
                     } else {
@@ -266,6 +266,26 @@ app.get('/rooms/:roomId/messages', (req,res) => {
             res.status(500).send(err);
         } else if(data) {
             Messages.find({roomId : req.params.roomId}, (err,data) => {
+                if(err) {
+                    res.status(500).send(err);
+                } else {
+                    res.status(200).send({data : data});
+                }
+            })
+        } else {
+            res.status(404).send({ msg : 'Room Not Found!' });
+        }
+    })
+});
+
+// Get Earlier Messages from Room
+app.post('/room/messages', (req,res) => {
+    const { roomId, lastMessageId } = req.body;
+    Rooms.findOne({_id: roomId }, (err,data) => {
+        if(err) {
+            res.status(500).send(err);
+        } else if(data) {
+            Messages.find({roomId : roomId, _id: { $lt: lastMessageId } },null,{sort: {'_id': -1}, limit: 10 }, (err,data) => {
                 if(err) {
                     res.status(500).send(err);
                 } else {
