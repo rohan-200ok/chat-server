@@ -178,6 +178,7 @@ app.post('/room/join', (req,res) => {
     const dbMessage = req.body;
 
     if(dbMessage.orderId) {
+        // console.log("in orders",dbMessage)
         Rooms.findOne({ orderId: dbMessage.orderId },(err,data) => {
             if(err) {
                 res.status(500).send(err);
@@ -196,7 +197,8 @@ app.post('/room/join', (req,res) => {
             }
         })
     } else if(dbMessage.productId) {
-        Rooms.findOne({ productId: dbMessage.productId },(err,data) => {
+        // console.log("in products",dbMessage)
+        Rooms.findOne({ productId: dbMessage.productId, buyerId: dbMessage.buyerId, sellerId: dbMessage.sellerId },(err,data) => {
             if(err) {
                 res.status(500).send(err);
             } else {
